@@ -1,0 +1,11 @@
+{
+  "name": "claude-themes",
+  "owner": { "name": "dmolloy98-stack-stack" },
+  "plugins": [
+    {
+      "name": "night-swing",
+      "source": "./night-swing",
+      "description": "A comic-book night-city theme with an original web-slinging hero who swings while Claude works and lands when it's done"
+    }
+  ]
+}
