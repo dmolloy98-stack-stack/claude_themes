@@ -5,10 +5,11 @@ Just-for-fun themes for the Claude Code desktop app.
 | Theme | What it is |
 | --- | --- |
 | [Night Swing](night-swing/) | A comic-book night city with an original web-slinging hero who swings into action while Claude works and lands on a rooftop when it's done. |
+| [Ink and Elements](ink-and-elements/) | An ink-wash scroll on parchment. A brush paints a journey through regions of water, earth, fire and air while Claude works, and seals it with a tea shop when it's done. |
 
 ## Install a theme
 
-At the prompt of a Claude Code terminal session:
+At the prompt of a Claude Code terminal session, with the theme's name (`night-swing` or `ink-and-elements`):
 
 ```text
 /plugin install night-swing --marketplace dmolloy98-stack-stack/claude_themes
