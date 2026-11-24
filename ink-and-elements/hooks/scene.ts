@@ -13,6 +13,8 @@ type Def = { layer: 'ground' | 'sky' | 'below'; ink: readonly Ink[]; wash?: read
 const W = 1600
 const H = 1000
 const MOVE_S = 3
+// Motifs, the traveler and the brush are drawn larger than their sketches.
+const MS = 1.5
 
 // The trail's height at a point along the scroll: a slow, wandering line.
 export function trailY(x: number): number {
@@ -282,7 +284,7 @@ function ridge(stage: Stage): { fill: string; crest: string } {
   const rand = rng(stage.seed)
   const x0 = stage.x - 60
   const x1 = stage.x + STAGE_W + 60
-  const base = 520
+  const base = 560
   const pts: [number, number][] = []
   const n = 9
   for (let i = 0; i <= n; i++) {
@@ -294,7 +296,7 @@ function ridge(stage: Stage): { fill: string; crest: string } {
     else h = i % 2 === 0 ? 120 + rand() * 60 : 230 + rand() * 90 // needle peaks
     // Taper both ends down to the base so neighbouring regions blend.
     const edge = Math.min(i, n - i)
-    pts.push([x, base - (edge === 0 ? 0 : edge === 1 ? h * 0.6 : h)])
+    pts.push([x, base - 1.35 * (edge === 0 ? 0 : edge === 1 ? h * 0.6 : h)])
   }
   const flat = stage.el === 'earth'
   let crest = `M${r1(pts[0]![0])} ${r1(pts[0]![1])}`
@@ -341,10 +343,10 @@ function wash(d: string, tone: number, tint: 0 | 1, el: Element, anim: Anim, sof
 
 function motifY(m: Motif, def: Def): number {
   const y = trailY(m.x)
-  if (def.layer === 'sky') return 300 + (m.seed % 90)
-  if (def.layer === 'below') return y + 58
+  if (def.layer === 'sky') return 260 + (m.seed % 120)
+  if (def.layer === 'below') return y + 80
   // Things on the ground stand just above or just below the trail, alternating.
-  return y + (m.seed % 2 === 0 ? -6 : 36)
+  return y + (m.seed % 2 === 0 ? -6 : 50)
 }
 
 // The brush itself: (0, 0) is the tip.
@@ -453,6 +455,55 @@ function seal(x: number, y: number, rot: number, fresh: Anim): string {
   )
 }
 
+// ---------- the fixed frame ----------
+
+// Art that stays put in the margins while the scroll pans: a pale sun, mist and far
+// peaks behind the painting, and a cliff with a leaning pine in front of it.
+function frameBack(el: Element): string {
+  return (
+    `<circle cx="250" cy="190" r="66" class="seal o3"/>` +
+    `<path d="M-40 520Q300 470 620 520Q300 560 -40 520Z" class="e-${el} o3" filter="url(#soft)"/>` +
+    `<g mask="url(#fadeDown)"><path d="M1240 640L1320 360L1380 440L1450 240L1530 400L1600 330V640Z" class="inkf o3" filter="url(#soft)"/></g>` +
+    `<path d="M1240 640L1320 360L1380 440L1450 240L1530 400L1600 330" class="s ink t4" stroke-width="2.5"/>`
+  )
+}
+
+// A pine-needle cluster: a fan of short strokes over a soft wash, as a brush paints it.
+function needles(x: number, y: number, r: number): string {
+  let d = ''
+  for (let a = -170; a <= -10; a += 20) {
+    const t = (a * Math.PI) / 180
+    d += `M${r1(x)} ${r1(y)}L${r1(x + Math.cos(t) * r)} ${r1(y + Math.sin(t) * r * 0.55)}`
+  }
+  return (
+    `<path d="M${x - r} ${y}Q${x} ${y - r * 0.8} ${x + r} ${y}Z" class="inkf o3" filter="url(#soft)"/>` +
+    `<path d="${d}" class="s ink t1" stroke-width="2.4"/>`
+  )
+}
+
+// In front of the passing scroll: the cliff and its pine on the left, reeds and
+// ripples along the foot of the right margin.
+function frameFront(): string {
+  let reeds = ''
+  for (let i = 0; i < 9; i++) {
+    const x = 1440 + i * 18
+    const h = 90 + ((i * 37) % 70)
+    reeds += `M${x} 1000Q${x - 6} ${1000 - h / 2} ${x + (i % 2 === 0 ? -14 : 12)} ${1000 - h}`
+  }
+  return (
+    `<path d="M0 1000V300Q40 292 64 330Q100 370 92 440Q130 490 122 570Q170 630 150 710Q200 780 186 870L210 1000Z" class="inkf o4" filter="url(#soft)"/>` +
+    `<path d="M0 1000V340Q30 336 46 376Q76 416 68 486Q100 536 92 606Q136 666 120 746Q164 816 150 896L170 1000Z" class="inkf o3"/>` +
+    `<path d="M0 300Q40 292 64 330Q100 370 92 440Q130 490 122 570Q170 630 150 710Q200 780 186 870L210 1000" class="s ink t1" stroke-width="6"/>` +
+    `<path d="M30 420Q52 450 44 500M76 560Q92 600 84 640M112 700Q128 740 120 780M24 620Q40 680 32 740M56 820Q72 860 64 920" class="s ink t2" stroke-width="3"/>` +
+    `<path d="M56 335Q110 282 190 262Q240 250 296 266" class="s ink t1" stroke-width="11"/>` +
+    `<path d="M62 330Q112 288 188 270" class="s ink t3" stroke-width="4"/>` +
+    `<path d="M140 280Q160 246 150 214M214 258Q246 228 288 230" class="s ink t1" stroke-width="5"/>` +
+    needles(150, 214, 44) + needles(288, 230, 50) + needles(306, 268, 38) + needles(212, 256, 32) + needles(96, 300, 28) +
+    `<path d="${reeds}" class="s ink t1" stroke-width="4"/>` +
+    `<path d="M1300 960H1420M1340 980H1460M240 960H340M220 980H320" class="s ink t3" stroke-width="2.5"/>`
+  )
+}
+
 // ---------- the whole scroll ----------
 
 const STYLE = `
@@ -471,8 +522,8 @@ const STYLE = `
 .vig{fill:#000000}
 }
 .s{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.t1{opacity:.92}.t2{opacity:.62}.t3{opacity:.38}.t4{opacity:.14}
-.o1{opacity:.55}.o2{opacity:.32}.o3{opacity:.18}.o4{opacity:.09}
+.t1{opacity:.95}.t2{opacity:.7}.t3{opacity:.46}.t4{opacity:.16}
+.o1{opacity:.6}.o2{opacity:.4}.o3{opacity:.24}.o4{opacity:.12}
 .dr{stroke-dasharray:1 1;animation:draw .9s ease-out both}
 .drw{stroke-dasharray:1 1;animation:draw .9s ease-out both,settle 3s ease-out both}
 @keyframes draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
@@ -582,7 +633,7 @@ export function buildScene(scroll: Scroll, now: number): string {
     const fresh = age < 4
     const span = m.kind === 'teahouse' ? 2.4 : 1.6
     const anim: Anim = fresh ? { at: -age, span } : null
-    const flip = m.flip && m.kind !== 'teahouse' && m.kind !== 'blot' ? ' scale(-1 1)' : ''
+    const flip = m.flip && m.kind !== 'teahouse' && m.kind !== 'blot' ? ` scale(${-MS} ${MS})` : ` scale(${MS})`
     let body = ''
     for (const [d, tone, tint] of def.wash ?? []) {
       body += wash(d, tone, tint, m.el, anim === null ? null : { at: anim.at + span * 0.7, span: 0 }, true)
@@ -615,16 +666,16 @@ export function buildScene(scroll: Scroll, now: number): string {
     ? `<style>@keyframes walk{from{transform:translate(${r1(tFrom - tx)}px,${r1(trailY(tFrom) - ty)}px)}}</style>` +
       `<g style="animation:walk ${MOVE_S}s ease-in-out both;animation-delay:${sec(-tElapsed)}s">`
     : '<g>'
-  const figure = `${walk}<g transform="translate(${r1(tx)} ${r1(ty)})">${traveler(pose, scroll.el)}</g></g>`
+  const figure = `${walk}<g transform="translate(${r1(tx)} ${r1(ty)}) scale(${MS})">${traveler(pose, scroll.el)}</g></g>`
 
   // With no stroke in progress, the brush hovers over the scroll, or lies at rest.
   if (brush === '') {
     if (pose === 'work' || pose === 'trouble') {
-      brush = `<g transform="translate(${r1(tx + 70)} ${r1(ty - 150)})"><g class="${pose === 'trouble' ? 'shake' : 'hover'}"><g transform="rotate(24)">${brushSvg()}</g></g></g>`
+      brush = `<g transform="translate(${r1(tx + 100)} ${r1(ty - 210)})"><g class="${pose === 'trouble' ? 'shake' : 'hover'}"><g transform="rotate(24) scale(1.3)">${brushSvg()}</g></g></g>`
     } else if (pose === 'ask') {
-      brush = `<g transform="translate(${r1(tx + 110)} ${r1(ty - 260)})"><g class="lifted"><g transform="rotate(32)">${brushSvg()}</g></g></g>`
+      brush = `<g transform="translate(${r1(tx + 140)} ${r1(ty - 320)})"><g class="lifted"><g transform="rotate(32) scale(1.3)">${brushSvg()}</g></g></g>`
     } else {
-      brush = `<g transform="translate(${r1(tx + 150)} ${r1(ty + 70)})"><g transform="rotate(-70)">${brushSvg()}</g></g>`
+      brush = `<g transform="translate(${r1(tx + 90)} ${r1(ty + 110)})"><g transform="rotate(-70) scale(1.3)">${brushSvg()}</g></g>`
     }
   }
 
@@ -645,9 +696,11 @@ export function buildScene(scroll: Scroll, now: number): string {
     `<mask id="edgeMask"><rect width="${W}" height="${H}" fill="url(#edge)"/></mask>` +
     `</defs>` +
     paper() +
+    frameBack(scroll.el) +
     camStyle +
     `<g>${far}</g><g>${trail}${near}</g><g filter="url(#rough)">${motifs}</g>${freshMotifs}${figure}${brush}` +
     `</g>` +
+    frameFront() +
     glyphs(scroll.el, pose) +
     `</svg>`
   )
