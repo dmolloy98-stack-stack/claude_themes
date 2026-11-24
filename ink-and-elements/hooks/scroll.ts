@@ -19,9 +19,9 @@ export type Scroll = {
   last: number
 }
 
-export const STAGE_W = 820
+export const STAGE_W = 960
 const SLOTS = 5
-const SLOT_X = (i: number): number => 90 + i * 140
+const SLOT_X = (i: number): number => 90 + i * 170
 // Where the newest work sits on screen, from the left edge of the 1600-wide view:
 // in the right-hand margin, beside the conversation rather than behind it.
 export const FOCUS_X = 1340
@@ -53,7 +53,7 @@ export function newScroll(seed = Math.floor(Math.random() * 1e6)): Scroll {
     motifs: [],
     el,
     pose: 'idle',
-    traveler: { from: FOCUS_X - 400, to: FOCUS_X - 400, at: 0 },
+    traveler: { from: FOCUS_X + AHEAD, to: FOCUS_X + AHEAD, at: 0 },
     cam: { from: 0, to: 0, at: 0 },
     last: -1,
   }
