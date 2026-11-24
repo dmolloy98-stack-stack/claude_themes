@@ -134,7 +134,7 @@ const SOUND: ThemeSound = {
 const SCENE = 'ink-and-elements'
 const LOOK: ThemeSetArgs = {
   colors: theme,
-  backdrop: { scene: SCENE, glass: { blur: 6, opacity: 0.35 } },
+  backdrop: { scene: SCENE, glass: { blur: 2, opacity: 0.15 } },
   sound: SOUND,
   style: STYLE,
 }

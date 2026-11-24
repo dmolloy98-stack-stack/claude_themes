@@ -19,11 +19,14 @@ export type Scroll = {
   last: number
 }
 
-export const STAGE_W = 560
+export const STAGE_W = 820
 const SLOTS = 5
-const SLOT_X = (i: number): number => 80 + i * 96
-// Where the newest work sits on screen, from the left edge of the 1600-wide view.
-export const FOCUS_X = 1120
+const SLOT_X = (i: number): number => 90 + i * 140
+// Where the newest work sits on screen, from the left edge of the 1600-wide view:
+// in the right-hand margin, beside the conversation rather than behind it.
+export const FOCUS_X = 1340
+// How far the traveler walks past the newest motif.
+const AHEAD = 110
 const KEEP = 240
 
 // What each element paints, in the order the brush reaches for them.
@@ -68,7 +71,7 @@ function nextStageX(scroll: Scroll): number {
   if (prev === undefined) return FOCUS_X - SLOT_X(0)
   // After a tea shop, leave it room before the next region starts.
   const lastX = scroll.motifs[scroll.motifs.length - 1]?.x ?? prev.x
-  return Math.max(prev.x + STAGE_W, lastX + 140)
+  return Math.max(prev.x + STAGE_W, lastX + 220)
 }
 
 function openStage(scroll: Scroll, el: Element, now: number): Stage {
@@ -79,7 +82,7 @@ function openStage(scroll: Scroll, el: Element, now: number): Stage {
 
 function moveTo(scroll: Scroll, x: number, now: number): void {
   scroll.traveler = { from: travelerX(scroll, now), to: x, at: now }
-  scroll.cam = { from: camX(scroll, now), to: x - FOCUS_X - 40, at: now }
+  scroll.cam = { from: camX(scroll, now), to: x - FOCUS_X - AHEAD, at: now }
 }
 
 // Where the traveler and camera are right now, partway through a move.
@@ -118,7 +121,7 @@ export function paint(scroll: Scroll, el: Element, now: number): void {
   const x = stage.x + SLOT_X(stage.slots)
   stage.slots += 1
   addMotif(scroll, stage, kind, x, now)
-  moveTo(scroll, x + 74, now)
+  moveTo(scroll, x + AHEAD, now)
 }
 
 // A failed step: the brush slips and a blot of ink spreads beside the last work.
@@ -138,11 +141,11 @@ export function rest(scroll: Scroll, painted: boolean, now: number): void {
   const stage = scroll.stages[scroll.stages.length - 1]
   if (!painted || stage === undefined) return
   const lastX = scroll.motifs[scroll.motifs.length - 1]?.x ?? stage.x
-  const x = Math.max(stage.x + 90, lastX + 150)
+  const x = Math.max(stage.x + 90, lastX + 230)
   stage.slots = SLOTS
   stage.closed = true
   addMotif(scroll, stage, 'teahouse', x, now)
-  moveTo(scroll, x + 120, now)
+  moveTo(scroll, x + 180, now)
 }
 
 // How many motifs of each element are on the scroll, for the journey summary.

@@ -1,12 +1,12 @@
 import { expect, test } from 'claude-code/testing'
 
-const BACKDROP = { plugin: 'ink-and-elements', component: 'Backdrop', props: { scene: 'ink-and-elements' } } as const
+const BACKDROP = { plugin: 'ink-and-elements', component: 'Backdrop', props: { scene: 'ink-and-elements', plugin: 'ink-and-elements', glass: { blur: 2, opacity: 0.15 } } } as const
 
 test('the look is set once, and each tool call paints the scroll', async ($, on) => {
   const looks: unknown[] = []
   on('theme.set', (_, e) => {
     looks.push(e)
-    return { value: { isDrawn: true } }
+    return { value: { isDrawn: true, requestId: 'r' } as const }
   })
   on('command.register', () => ({ value: { command: 'proverb' } }))
   on('session.start', (_, e) => ({ cwd: e.cwd }))
@@ -38,7 +38,7 @@ test('the look is set once, and each tool call paints the scroll', async ($, on)
 })
 
 test('a long session keeps the scene under the size limit', async ($, on) => {
-  on('theme.set', () => ({ value: { isDrawn: true } }))
+  on('theme.set', () => ({ value: { isDrawn: true, requestId: 'r' } as const }))
   on('command.register', () => ({ value: { command: 'proverb' } }))
   on('session.start', (_, e) => ({ cwd: e.cwd }))
   on('turn.start', (_, e) => ({ turnId: e.turnId }))
