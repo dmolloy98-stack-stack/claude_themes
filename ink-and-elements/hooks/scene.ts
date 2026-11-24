@@ -673,7 +673,7 @@ export function buildScene(scroll: Scroll, now: number): string {
     if (pose === 'work' || pose === 'trouble') {
       brush = `<g transform="translate(${r1(tx + 100)} ${r1(ty - 210)})"><g class="${pose === 'trouble' ? 'shake' : 'hover'}"><g transform="rotate(24) scale(1.3)">${brushSvg()}</g></g></g>`
     } else if (pose === 'ask') {
-      brush = `<g transform="translate(${r1(tx + 140)} ${r1(ty - 320)})"><g class="lifted"><g transform="rotate(32) scale(1.3)">${brushSvg()}</g></g></g>`
+      brush = `<g transform="translate(${r1(tx + 40)} ${r1(ty - 300)})"><g class="lifted"><g transform="rotate(32) scale(1.3)">${brushSvg()}</g></g></g>`
     } else {
       brush = `<g transform="translate(${r1(tx + 90)} ${r1(ty + 110)})"><g transform="rotate(-70) scale(1.3)">${brushSvg()}</g></g>`
     }
