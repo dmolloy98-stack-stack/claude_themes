@@ -7,7 +7,7 @@ A comic-book night-city theme for the Claude Code desktop app. A masked web-slin
 - **When Claude is done**, the hero lands on a rooftop in close-up ("Mission complete!") and the villain hangs webbed up under the bridge.
 - **When a step fails**, danger-sense lines flash around the hero's head.
 
-The city has a stone suspension bridge with moving traffic, a river full of reflections, a ferry, searchlights and a halftone sky. Messages get a comic look too: yellow caption boxes for yours, inked panels for Claude's, and bold comic headings. Dark mode only.
+The hero swings from skyscraper to skyscraper and tower to tower across a city framed by close-up skyscrapers (pizza place included), with a stone suspension bridge with moving traffic, a river full of reflections, a ferry, searchlights and a halftone sky. Messages get a comic look too: yellow caption boxes for yours, inked panels for Claude's, and bold comic headings. Dark mode only.
 
 ## Extras
 
